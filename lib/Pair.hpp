@@ -6,6 +6,7 @@ class Pair {
   public:
     static void saveMAC(uint8_t macArray[6]);
     static void loadMAC(uint8_t macArray[6]);
+    static void clearSettings();
     static bool hasSavedMAC();
 
     static esp_err_t addPeer(uint8_t* peerMAC);

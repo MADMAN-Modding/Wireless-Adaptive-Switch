@@ -5,4 +5,6 @@ class Commands {
       ON,
       OFF
     };
+
+    static const char* commandName(Commands::command code) {}
 };

@@ -48,6 +48,7 @@ void OnDataRecv(const esp_now_recv_info_t *info, const uint8_t *data, int len) {
   }
   if (!paired) {
     memcpy(peerMAC, info->src_addr, 6);
+    Serial.printf("Pair: %s\n", Util::macToString(peerMAC));
     paired = true;
     Serial.println("Paired!");
     Pair::saveMAC(peerMAC);
@@ -60,6 +61,8 @@ void OnDataRecv(const esp_now_recv_info_t *info, const uint8_t *data, int len) {
 void setup() {
   // Init Serial Monitor
   Serial.begin(115200);
+
+  Pair::clearSettings();
  
   // Set device as a Wi-Fi Station
   WiFi.mode(WIFI_STA);
@@ -70,16 +73,26 @@ void setup() {
     return;
   }
 
+  // paired = Pair::hasSavedMAC();
+
   // Once ESPNow is successfully Init, we will register for Send CB to
   // get the status of Transmitted packet
   esp_now_register_send_cb(OnDataSent);
   esp_now_register_recv_cb(OnDataRecv);
 
-  
-  // Register and add peer        
-  if (Pair::addPeer(broadcastAddress) != ESP_OK){
-    Serial.println("Failed to add peer");
-    return;
+  if (paired) {
+    uint8_t mac[6];
+    Pair::loadMAC(mac);
+
+    Util::macToString(mac);
+
+    Pair::addPeer(mac);
+  } else {
+    // Register and add peer        
+    if (Pair::addPeer(broadcastAddress) != ESP_OK){
+      Serial.println("Failed to add peer");
+      return;
+    }
   }
 }
  
@@ -95,6 +108,8 @@ void loop() {
     // Set values to send
     myData.code = lastWrite ? Commands::OFF : Commands::ON;
     
+    Serial.printf("MAC: %s\n", Util::macToString(peerMAC));
+
     // Send message via ESP-NOW
     esp_err_t result = esp_now_send(peerMAC, (uint8_t *) &myData, sizeof(myData));
     
