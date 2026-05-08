@@ -27,6 +27,7 @@ bool paired = false;
 unsigned long lastBroadcast = 0;
 const int BROADCAST_INTERVAL = 500; // ms
 
+/// @brief PIN for receiving input
 int buttonPIN = 15;
 
 // Create a struct_message called myData
@@ -54,6 +55,8 @@ void OnDataRecv(const esp_now_recv_info_t *info, const uint8_t *data, int len) {
     paired = true;
     Serial.println("Paired!");
     Pair::saveMAC(peerMAC);
+
+    // Used to ensure that the saved MAC is the one being used
     Pair::loadMAC(peerMAC);
 
     // Register Peer
@@ -84,12 +87,16 @@ void setup() {
 
   // Once ESPNow is successfully Init, we will register for Send CB to
   // get the status of Transmitted packet
+
+  // These functions are called everytime a packet is sent or received respectively
   esp_now_register_send_cb(OnDataSent);
   esp_now_register_recv_cb(OnDataRecv);
 
+  // If the Arduino is paired
   if (paired) {
     Pair::loadMAC(peerMAC);
 
+    // Print MAC address of peer
     Util::macToString(peerMAC);
 
     Pair::addPeer(peerMAC);
@@ -102,6 +109,7 @@ void setup() {
   }
 }
  
+// Loop used for sending out commands
 void loop() {
   if (!paired && millis() - lastBroadcast > BROADCAST_INTERVAL) {
     myData.code = Commands::PAIR;

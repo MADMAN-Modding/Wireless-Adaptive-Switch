@@ -10,7 +10,7 @@ struct_message myData;
 
 const int BUTTON = 15;
 
-// Receive callback - correct signature for core 3.x
+// Receive callback
 void OnDataRecv(const esp_now_recv_info_t *info, const uint8_t *incomingData, int len) {
   if (len != sizeof(myData)) {
     Serial.println("Ignoring non-command message");
@@ -34,7 +34,7 @@ void OnDataRecv(const esp_now_recv_info_t *info, const uint8_t *incomingData, in
           Pair::addPeer(senderMAC);
         }
 
-        // Now reply with reciever MAC
+        // Now reply with receiver MAC
         uint8_t myMac[6];
         WiFi.macAddress(myMac);
         Serial.println(esp_now_send(senderMAC, myMac, 6));
@@ -55,6 +55,7 @@ void setup() {
     return;
   }
 
+  // If there is a saved MAC address add it as a peer to allow connections
   if (Pair::hasSavedMAC()) {
     uint8_t mac;
     Pair::loadMAC(&mac);
@@ -68,5 +69,5 @@ void setup() {
   pinMode(BUTTON, OUTPUT);
 }
 
-void loop() {
-}
+// This is only here because it has to be
+void loop() {}
