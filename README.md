@@ -2,6 +2,10 @@
 
 This project was created for being able to control adaptive technology wireless via an ESP32. This project uses ESP-Now as its backend.
 
+
+[![Wireless Adaptive Switch](https://img.youtube.com/vi/uZVO7c8js2c/0.jpg)](https://youtu.be/uZVO7c8js2c "Wireless Adaptive Switch")
+
+
 ## Setup
 
 Compiling this project by opening in Arduino IDE and hitting compile won't work, the library in `lib` will have to be added to your Arduino library under the folder `Wireless-Adaptive-Switch`, I recommend doing this via a symlink.
